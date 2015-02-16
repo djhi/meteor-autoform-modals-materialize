@@ -1,0 +1,27 @@
+<template name="autoformModals">
+	<div class="modal" id="afModal">
+		<div class="modal-content">
+			<h4>
+				<a href="#" class="btn-flat modal-close secondary-content">&times;</a>
+				{{{title}}}
+			</h4>
+			{{#if $and cmCollection cmOperation}}
+			<p>{{{prompt}}}</p>
+			{{#if $neq cmOperation 'remove'}}
+			{{> quickForm title=cmTitle id="cmForm" collection=cmCollection doc=cmDoc type=cmOperation buttonContent=cmButtonContent fields=cmFields omitFields=cmOmitFields buttonClasses=cmButtonClasses}}
+			{{/if}}
+			{{/if}}
+			{{#if $eq cmOperation 'remove'}}
+			<div class="modal-footer">
+				<button class="{{cmButtonClasses}}">{{{buttonContent}}}</button>
+			</div>
+			{{/if}}
+		</div>
+	</div>
+</template>
+
+<template name="afModal">
+	<a href="#afModal" class="{{classes}}" collection="{{collection}}" operation="{{operation}}">
+		{{> UI.contentBlock}}
+	</a>
+</template>
