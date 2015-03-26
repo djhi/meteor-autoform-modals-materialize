@@ -16,25 +16,25 @@ Original code from **yogiben**:
 ##Example Button Markup##
 ### Insert Example ###
 ```
-{{#afModal class="btn" collection="Posts" operation="insert"}}
+{{#afModal classes="btn" collection="Posts" operation="insert"}}
   Add a new post
 {{/afModal}}
 ```
 ### Update Example ###
 ```
-{{#afModal class="btn" collection="Posts" operation="update" doc=_id}}
+{{#afModal classes="btn" collection="Posts" operation="update" doc=_id}}
   Update post
 {{/afModal}}
 ```
 ### Remove Example ###
 ```
-{{#afModal class="btn red" collection="Posts" operation="remove" doc=_id}}
+{{#afModal classes="btn red" collection="Posts" operation="remove" doc=_id}}
   Delete post
 {{/afModal}}
 ```
 ### Example with customisation ###
 ```
-{{#afModal class="btn" collection="Posts" omitFields="createdAt,owner,upvotes" operation="update" buttonContent="Update Challenger" prompt="Use this form to update your doc" title="Update your great content" buttonClasses="btn light-green accent-4"}}
+{{#afModal classes="btn" collection="Posts" omitFields="createdAt,owner,upvotes" operation="update" buttonContent="Update Challenger" prompt="Use this form to update your doc" title="Update your great content" buttonClasses="btn light-green accent-4"}}
   Update your post
 {{/afModal}}
 ```

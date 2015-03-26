@@ -1,41 +1,28 @@
-# Template.CollectionModalButton.events
-# 	'click .collection-modals': (e,t) ->
-# 		$('#collection-modal').modal('show')
-# 		collection = $(e.currentTarget).attr('collection')
-# 		operation = $(e.currentTarget).attr('operation')
-# 		_id = $(e.currentTarget).attr('doc')
-# 		omitFields = $(e.currentTarget).attr('omitFields')
-# 		doc = window[collection].findOne _id:_id
-# 		html = $(e.currentTarget).html()
+registeredAutoFormHooks = ['cmForm']
 
-# 		Session.set('cmCollection',collection)
-# 		Session.set('cmOperation',operation)
-# 		Session.set('cmDoc',doc)
-# 		Session.set('cmButtonHtml',html)
-# 		Session.set('cmOmitFields',omitFields)
+AutoForm.addHooks 'cmForm',
+	onSuccess: ->
+		$('#afModal').closeModal()
 
 collectionObj = (name) ->
 	name.split('.').reduce (o, x) ->
 		o[x]
 	, window
 
-cleanSession = () ->
-	sessionKeys = [
-		'cmCollection',
-		'cmOperation',
-		'cmDoc',
-		'cmButtonHtml',
-		'cmFields',
-		'cmOmitFields',
-		'cmButtonContent',
-		'cmTitle',
-		'cmButtonClasses',
-		'cmPrompt'
-	]
-	delete Session.keys[key] for key in sessionKeys
-	AutoForm.invalidateFormContext 'cmForm'
-	AutoForm.resetForm 'cmForm'
-	return
+Template.autoformModals.events
+	'click button:not(.close)': () ->
+		collection = Session.get 'cmCollection'
+		operation = Session.get 'cmOperation'
+
+		if operation != 'insert'
+			_id = Session.get('cmDoc')._id
+
+		if operation == 'remove'
+			collectionObj(collection).remove _id, (e) ->
+				if e
+					alert 'Sorry, this could not be deleted.'
+				else
+					$('#afModal').modal('hide')
 
 helpers =
 	cmCollection: () ->
@@ -58,6 +45,16 @@ helpers =
 		Session.get 'cmButtonClasses'
 	cmPrompt: () ->
 		Session.get 'cmPrompt'
+	cmTemplate: () ->
+		Session.get 'cmTemplate'
+	cmLabelClass: () ->
+		Session.get 'cmLabelClass'
+	cmInputColClass: () ->
+		Session.get 'cmInputColClass'
+	cmPlaceholder: () ->
+		Session.get 'cmPlaceholder'
+	cmFormId: () ->
+		Session.get('cmFormId') or 'cmForm'
 	title: () ->
 		StringTemplate.compile '{{{cmTitle}}}', helpers
 	prompt: () ->
@@ -69,85 +66,75 @@ Template.autoformModals.helpers helpers
 
 Template.autoformModals.destroyed = -> $('body').unbind 'click'
 
-Template.afModal.rendered = ->
-	$('.modal-trigger').leanModal
-		ready: ->
-			AutoForm.invalidateFormContext 'cmForm'
-			return
-
-Template.afModal.helpers
-	classes: ->
-		classes = Template.instance().data.class or ""
-		array = classes.split ' '
-		classes = _.union array, ['modal-trigger']
-		classes.join ' '
-
 Template.afModal.events
 	'click *': (e, t) ->
 		e.preventDefault()
 
 		html = t.$('*').html()
 
-		options = t.data
-		options.title = options.title or html
-		AutoForm.openModal options
+		Session.set 'cmCollection', t.data.collection
+		Session.set 'cmOperation', t.data.operation
+		Session.set 'cmFields', t.data.fields
+		Session.set 'cmOmitFields', t.data.omitFields
+		Session.set 'cmButtonHtml', html
+		Session.set 'cmTitle', t.data.title or html
+		Session.set 'cmTemplate', t.data.template
+		Session.set 'cmLabelClass', t.data.labelClass
+		Session.set 'cmInputColClass', t.data.inputColClass
+		Session.set 'cmPlaceholder', if t.data.placeholder is true then 'schemaLabel' else ''
+		Session.set 'cmFormId', t.data.formId
 
-AutoForm.openModal = (options) ->
-	cleanSession()
-	
-	{
-		collection,
-		operation,
-		fields,
-		omitFields,
-		title,
-		doc,
-		buttonContent,
-		buttonClasses,
-		prompt
-	} = options
+		if not _.contains registeredAutoFormHooks, t.data.formId
+			AutoForm.addHooks t.data.formId,
+				onSuccess: ->
+					$('#afModal').modal 'hide'
+			registeredAutoFormHooks.push t.data.formId
 
-	Session.set 'cmCollection', options.collection
-	Session.set 'cmOperation', options.operation
-	Session.set 'cmFields', options.fields
-	Session.set 'cmOmitFields', options.omitFields
-	Session.set 'cmTitle', options.title
+		if t.data.doc
+			Session.set 'cmDoc', collectionObj(t.data.collection).findOne _id: t.data.doc
 
-	if typeof options.doc == 'string'
-		Session.set 'cmDoc', collectionObj(options.collection).findOne _id: options.doc
-	else
-		Session.set 'cmDoc', options.doc
+		if t.data.buttonContent
+			Session.set 'cmButtonContent', t.data.buttonContent
+		else if t.data.operation == 'insert'
+			Session.set 'cmButtonContent', 'Create'
+		else if t.data.operation == 'update'
+			Session.set 'cmButtonContent', 'Update'
+		else if t.data.operation == 'remove'
+			Session.set 'cmButtonContent', 'Delete'
 
-	if options.buttonContent
-		Session.set 'cmButtonContent', options.buttonContent
-	else if options.operation == 'insert'
-		Session.set 'cmButtonContent', 'Create'
-	else if options.operation == 'update'
-		Session.set 'cmButtonContent', 'Update'
-	else if options.operation == 'remove'
-		Session.set 'cmButtonContent', 'Delete'
+		if t.data.buttonClasses
+			Session.set 'cmButtonClasses', t.data.buttonClasses
+		else if t.data.operation == 'remove'
+			Session.set 'cmButtonClasses', 'waves-effect btn-flat modal-action'
+		else
+			Session.set 'cmButtonClasses', 'waves-effect btn-flat modal-action'
 
-	if options.buttonClasses
-		Session.set 'cmButtonClasses', options.buttonClasses
-	else if options.operation == 'remove'
-		Session.set 'cmButtonClasses', 'waves-effect btn-flat modal-action'
-	else
-		Session.set 'cmButtonClasses', 'waves-effect btn-flat modal-action'
+		if t.data.prompt
+			Session.set 'cmPrompt', t.data.prompt
+		else if t.data.operation == 'remove'
+			Session.set 'cmPrompt', 'Are you sure?'
+		else
+			Session.set 'cmPrompt', ''
 
-	if options.prompt
-		Session.set 'cmPrompt', options.prompt
-	else if options.operation == 'remove'
-		Session.set 'cmPrompt', 'Are you sure?'
-	else
-		Session.set 'cmPrompt', ''
-
-	$('#afModal').openModal
-		ready: ->
-			AutoForm.invalidateFormContext 'cmForm'
-			return
-
-AutoForm.hooks(
-	cmForm :
-		onSuccess: (operation, result, template)->
-			$('#afModal').closeModal()
-		)
+		$('#afModal').openModal
+			complete: ->
+				sessionKeys = [
+					'cmCollection',
+					'cmOperation',
+					'cmDoc',
+					'cmButtonHtml',
+					'cmFields',
+					'cmOmitFields',
+					'cmButtonContent',
+					'cmTitle',
+					'cmButtonClasses',
+					'cmPrompt',
+					'cmTemplate',
+					'cmLabelClass',
+					'cmInputColClass',
+					'cmPlaceholder'
+				]
+				delete Session.keys[key] for key in sessionKeys
+				return
+				
+		return
