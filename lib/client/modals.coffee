@@ -3,6 +3,7 @@ registeredAutoFormHooks = ['cmForm']
 AutoForm.addHooks 'cmForm',
 	onSuccess: ->
 		$('#afModal').closeModal()
+		return
 
 collectionObj = (name) ->
 	name.split('.').reduce (o, x) ->
@@ -22,11 +23,15 @@ Template.autoformModals.events
 				if e
 					alert 'Sorry, this could not be deleted.'
 				else
-					$('#afModal').modal('hide')
+					$('#afModal').closeModal()
 
 helpers =
+	cmFormId: () ->
+		Session.get 'cmFormId'
 	cmCollection: () ->
 		Session.get 'cmCollection'
+	cmSchema: () ->
+		Session.get 'cmSchema'
 	cmOperation: () ->
 		Session.get 'cmOperation'
 	cmDoc: () ->
@@ -72,7 +77,10 @@ Template.afModal.events
 
 		html = t.$('*').html()
 
+		formId = t.data.formId or "cmForm"
+		Session.set 'cmFormId', formId
 		Session.set 'cmCollection', t.data.collection
+		Session.set 'cmSchema', t.data.schema
 		Session.set 'cmOperation', t.data.operation
 		Session.set 'cmFields', t.data.fields
 		Session.set 'cmOmitFields', t.data.omitFields
@@ -82,15 +90,16 @@ Template.afModal.events
 		Session.set 'cmLabelClass', t.data.labelClass
 		Session.set 'cmInputColClass', t.data.inputColClass
 		Session.set 'cmPlaceholder', if t.data.placeholder is true then 'schemaLabel' else ''
-		Session.set 'cmFormId', t.data.formId
 
-		if not _.contains registeredAutoFormHooks, t.data.formId
-			AutoForm.addHooks t.data.formId,
+		if not _.contains registeredAutoFormHooks, formId
+			AutoForm.addHooks formId,
 				onSuccess: ->
-					$('#afModal').modal 'hide'
-			registeredAutoFormHooks.push t.data.formId
+					$('#afModal').closeModal()
+					return
+					
+			registeredAutoFormHooks.push formId
 
-		if t.data.doc
+		if t.data.doc and typeof t.data.doc == 'string'
 			Session.set 'cmDoc', collectionObj(t.data.collection).findOne _id: t.data.doc
 
 		if t.data.buttonContent
@@ -120,6 +129,7 @@ Template.afModal.events
 			complete: ->
 				sessionKeys = [
 					'cmCollection',
+					'cmSchema',
 					'cmOperation',
 					'cmDoc',
 					'cmButtonHtml',
@@ -136,5 +146,5 @@ Template.afModal.events
 				]
 				delete Session.keys[key] for key in sessionKeys
 				return
-				
+
 		return

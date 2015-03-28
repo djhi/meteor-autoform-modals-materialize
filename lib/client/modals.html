@@ -8,7 +8,17 @@
 			{{#if $and cmCollection cmOperation}}
 			<p>{{{prompt}}}</p>
 			{{#if $neq cmOperation 'remove'}}
-			{{> quickForm title=cmTitle id="cmForm" collection=cmCollection doc=cmDoc type=cmOperation buttonContent=cmButtonContent fields=cmFields omitFields=cmOmitFields buttonClasses=cmButtonClasses}}
+				{{> quickForm
+						title=cmTitle
+						id=cmFormId
+						collection=cmCollection
+						schema=cmSchema
+						doc=cmDoc
+						type=cmOperation
+						buttonContent=cmButtonContent
+						fields=cmFields
+						omitFields=cmOmitFields
+						buttonClasses=cmButtonClasses}}
 			{{/if}}
 			{{/if}}
 			{{#if $eq cmOperation 'remove'}}
@@ -21,7 +31,7 @@
 </template>
 
 <template name="afModal">
-	<a href="#afModal" class="{{classes}}" collection="{{collection}}" operation="{{operation}}">
+	<a {{atts}} href="#afModal" class="{{classes}}" collection="{{collection}}" operation="{{operation}}">
 		{{> UI.contentBlock}}
 	</a>
 </template>
