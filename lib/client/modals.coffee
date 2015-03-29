@@ -24,6 +24,17 @@ Template.autoformModals.events
 					alert 'Sorry, this could not be deleted.'
 				else
 					$('#afModal').closeModal()
+		return
+
+	'click [data-action="submit"]': (event, template) ->
+		event.preventDefault()
+		template.$('form').submit()
+		return
+
+	'click [data-action="cancel"]': (event, template) ->
+		event.preventDefault()
+		$('#afModal').closeModal()
+		return
 
 helpers =
 	cmFormId: () ->
@@ -44,10 +55,16 @@ helpers =
 		Session.get 'cmOmitFields'
 	cmButtonContent: () ->
 		Session.get 'cmButtonContent'
+	cmButtonCancelContent: () ->
+		Session.get 'cmButtonCancelContent'
 	cmTitle: () ->
 		Session.get 'cmTitle'
 	cmButtonClasses: () ->
 		Session.get 'cmButtonClasses'
+	cmButtonSubmitClasses: () ->
+		Session.get 'cmButtonSubmitClasses'
+	cmButtonCancelClasses: () ->
+		Session.get 'cmButtonCancelClasses'
 	cmPrompt: () ->
 		Session.get 'cmPrompt'
 	cmTemplate: () ->
@@ -64,8 +81,6 @@ helpers =
 		StringTemplate.compile '{{{cmTitle}}}', helpers
 	prompt: () ->
 		StringTemplate.compile '{{{cmPrompt}}}', helpers
-	buttonContent: () ->
-		StringTemplate.compile '{{{cmButtonContent}}}', helpers
 
 Template.autoformModals.helpers helpers
 
@@ -96,7 +111,7 @@ Template.afModal.events
 				onSuccess: ->
 					$('#afModal').closeModal()
 					return
-					
+
 			registeredAutoFormHooks.push formId
 
 		if t.data.doc and typeof t.data.doc == 'string'
@@ -111,12 +126,30 @@ Template.afModal.events
 		else if t.data.operation == 'remove'
 			Session.set 'cmButtonContent', 'Delete'
 
+		if t.data.buttonCancelContent
+			Session.set 'cmButtonCancelContent', t.data.buttonCancelContent
+		else
+			Session.set 'cmButtonCancelContent', 'Cancel'
+
+		defaultButtonClasses = 'waves-effect btn-flat modal-action'
 		if t.data.buttonClasses
 			Session.set 'cmButtonClasses', t.data.buttonClasses
-		else if t.data.operation == 'remove'
-			Session.set 'cmButtonClasses', 'waves-effect btn-flat modal-action'
+			Session.set 'cmButtonCancelClasses', t.data.buttonClasses
+			Session.set 'cmButtonSubmitClasses', t.data.buttonClasses
 		else
-			Session.set 'cmButtonClasses', 'waves-effect btn-flat modal-action'
+			Session.set 'cmButtonClasses', defaultButtonClasses
+			Session.set 'cmButtonCancelClasses', defaultButtonClasses
+			Session.set 'cmButtonSubmitClasses', defaultButtonClasses
+
+		if t.data.buttonSubmitClasses
+			Session.set 'cmButtonSubmitClasses', t.data.buttonSubmitClasses
+		else
+			Session.set 'cmButtonSubmitClasses', defaultButtonClasses
+
+		if t.data.buttonCancelClasses
+			Session.set 'cmButtonCancelClasses', t.data.buttonCancelClasses
+		else
+			Session.set 'cmButtonCancelClasses', defaultButtonClasses
 
 		if t.data.prompt
 			Session.set 'cmPrompt', t.data.prompt
