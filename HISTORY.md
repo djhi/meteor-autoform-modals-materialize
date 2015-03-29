@@ -1,3 +1,7 @@
+# 0.0.5
+
+Just updated github url in package.js
+
 # 0.0.4
 
 There is now a cancel button which is customizable.
