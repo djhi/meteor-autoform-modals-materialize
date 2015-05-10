@@ -1,3 +1,8 @@
+# 0.0.6
+
+From @andre-f: Fix buttons to bottom so they don't move if the form content scrolls. Also, corrected typo on cmOmitFields.
+
+
 # 0.0.5
 
 Just updated github url in package.js

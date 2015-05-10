@@ -1,7 +1,7 @@
 Package.describe({
   name: 'gildaspk:autoform-modals-materialize',
   summary: "Create, update and delete collections with materialize modals",
-  version: "0.0.5",
+  version: "0.0.6",
   git: "https://github.com/djhi/meteor-autoform-modals-materialize",
 });
 
