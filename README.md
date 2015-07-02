@@ -3,7 +3,7 @@ Meteor [Autoform](https://github.com/aldeed/meteor-autoform) Modals with Materia
 
 Adds materialize modals to insert/update/remove docs from Meteor collections.
 
-Original code from **yogiben**:
+Original code from **@yogiben**:
 [yogiben:autoform-modals](https://github.com/yogiben/meteor-autoform-modals)
 
 ## Setup ##
@@ -49,7 +49,7 @@ Operation can be ```insert```,```update``` or ```remove```.
 If ```operation="update``` or ```operation="remove"``` you also need to set the ```doc``` property to the _id of the document.
 
 ## Customisation ##
-It is possible to customise the modals by adding additional attributes to the `afModal` template.
+It is possible to customize the modals by adding additional attributes to the `afModal` template.
 * ```title``` will be the title of the modal (default to html of the button clicked)
 * ```buttonContent``` is the html content of the modals' button (default to html of the button clicked)
 * ```buttonCancelContent``` is the html content of the modals' cancel button (default to html of the button clicked)

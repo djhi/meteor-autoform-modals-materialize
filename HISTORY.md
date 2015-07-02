@@ -1,3 +1,7 @@
+# 0.0.7
+
+Added dependency to `gildaspk:autoform-materialize`
+
 # 0.0.6
 
 From @andre-f: Fix buttons to bottom so they don't move if the form content scrolls. Also, corrected typo on cmOmitFields.
