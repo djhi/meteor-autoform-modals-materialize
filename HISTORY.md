@@ -1,3 +1,7 @@
+# 0.0.8
+
+Fixing #6 by merging #7. Thanks @rwatts3
+
 # 0.0.7
 
 Added dependency to `gildaspk:autoform-materialize`
