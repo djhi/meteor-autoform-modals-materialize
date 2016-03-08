@@ -77,6 +77,8 @@ helpers =
 		Session.get 'cmPlaceholder'
 	cmFormId: () ->
 		Session.get('cmFormId') or 'cmForm'
+	cmMeteorMethod: () ->
+		Session.get 'cmMeteorMethod'
 	title: () ->
 		StringTemplate.compile '{{{cmTitle}}}', helpers
 	prompt: () ->
@@ -105,6 +107,7 @@ Template.afModal.events
 		Session.set 'cmLabelClass', t.data.labelClass
 		Session.set 'cmInputColClass', t.data.inputColClass
 		Session.set 'cmPlaceholder', if t.data.placeholder is true then 'schemaLabel' else ''
+		Session.set 'cmMeteorMethod', t.data.meteorMethod
 
 		if not _.contains registeredAutoFormHooks, formId
 			AutoForm.addHooks formId,
@@ -121,7 +124,7 @@ Template.afModal.events
 			Session.set 'cmButtonContent', t.data.buttonContent
 		else if t.data.operation == 'insert'
 			Session.set 'cmButtonContent', 'Create'
-		else if t.data.operation == 'update'
+		else if t.data.operation == 'update' or t.data.operation is 'method-update'
 			Session.set 'cmButtonContent', 'Update'
 		else if t.data.operation == 'remove'
 			Session.set 'cmButtonContent', 'Delete'
@@ -175,7 +178,8 @@ Template.afModal.events
 					'cmTemplate',
 					'cmLabelClass',
 					'cmInputColClass',
-					'cmPlaceholder'
+					'cmPlaceholder',
+					'cmMeteorMethod'
 				]
 				delete Session.keys[key] for key in sessionKeys
 				return
