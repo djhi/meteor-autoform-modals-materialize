@@ -1,3 +1,24 @@
+cmFormId = new ReactiveVar()
+cmCollection = new ReactiveVar()
+cmSchema = new ReactiveVar()
+cmOperation = new ReactiveVar()
+cmDoc = new ReactiveVar()
+cmButtonHtml = new ReactiveVar()
+cmFields = new ReactiveVar()
+cmOmitFields = new ReactiveVar()
+cmButtonContent = new ReactiveVar()
+cmButtonCancelContent = new ReactiveVar()
+cmTitle = new ReactiveVar()
+cmButtonClasses = new ReactiveVar()
+cmButtonSubmitClasses = new ReactiveVar()
+cmButtonCancelClasses = new ReactiveVar()
+cmPrompt = new ReactiveVar()
+cmTemplate = new ReactiveVar()
+cmLabelClass = new ReactiveVar()
+cmInputColClass = new ReactiveVar()
+cmPlaceholder = new ReactiveVar()
+cmMeteorMethod = new ReactiveVar()
+
 registeredAutoFormHooks = ['cmForm']
 
 AutoForm.addHooks 'cmForm',
@@ -12,11 +33,11 @@ collectionObj = (name) ->
 
 Template.autoformModals.events
 	'click button:not(.close)': () ->
-		collection = Session.get 'cmCollection'
-		operation = Session.get 'cmOperation'
+		collection = cmCollection.get()
+		operation = cmOperation.get()
 
 		if operation != 'insert'
-			_id = Session.get('cmDoc')._id
+			_id = cmDoc.get()._id
 
 		if operation == 'remove'
 			collectionObj(collection).remove _id, (e) ->
@@ -38,47 +59,47 @@ Template.autoformModals.events
 
 helpers =
 	cmFormId: () ->
-		Session.get 'cmFormId'
+		cmFormId.get()
 	cmCollection: () ->
-		Session.get 'cmCollection'
+		cmCollection.get()
 	cmSchema: () ->
-		Session.get 'cmSchema'
+		cmSchema.get()
 	cmOperation: () ->
-		Session.get 'cmOperation'
+		cmOperation.get()
 	cmDoc: () ->
-		Session.get 'cmDoc'
+		cmDoc.get()
 	cmButtonHtml: () ->
-		Session.get 'cmButtonHtml'
+		cmButtonHtml.get()
 	cmFields: () ->
-		Session.get 'cmFields'
+		cmFields.get()
 	cmOmitFields: () ->
-		Session.get 'cmOmitFields'
+		cmOmitFields.get()
 	cmButtonContent: () ->
-		Session.get 'cmButtonContent'
+		cmButtonContent.get()
 	cmButtonCancelContent: () ->
-		Session.get 'cmButtonCancelContent'
+		cmButtonCancelContent.get()
 	cmTitle: () ->
-		Session.get 'cmTitle'
+		cmTitle.get()
 	cmButtonClasses: () ->
-		Session.get 'cmButtonClasses'
+		cmButtonClasses.get()
 	cmButtonSubmitClasses: () ->
-		Session.get 'cmButtonSubmitClasses'
+		cmButtonSubmitClasses.get()
 	cmButtonCancelClasses: () ->
-		Session.get 'cmButtonCancelClasses'
+		cmButtonCancelClasses.get()
 	cmPrompt: () ->
-		Session.get 'cmPrompt'
+		cmPrompt.get()
 	cmTemplate: () ->
-		Session.get 'cmTemplate'
+		cmTemplate.get()
 	cmLabelClass: () ->
-		Session.get 'cmLabelClass'
+		cmLabelClass.get()
 	cmInputColClass: () ->
-		Session.get 'cmInputColClass'
+		cmInputColClass.get()
 	cmPlaceholder: () ->
-		Session.get 'cmPlaceholder'
+		cmPlaceholder.get()
 	cmFormId: () ->
-		Session.get('cmFormId') or 'cmForm'
+		cmFormId.get() or 'cmForm'
 	cmMeteorMethod: () ->
-		Session.get 'cmMeteorMethod'
+		cmMeteorMethod.get()
 	title: () ->
 		StringTemplate.compile '{{{cmTitle}}}', helpers
 	prompt: () ->
@@ -95,19 +116,19 @@ Template.afModal.events
 		html = t.$('*').html()
 
 		formId = t.data.formId or "cmForm"
-		Session.set 'cmFormId', formId
-		Session.set 'cmCollection', t.data.collection
-		Session.set 'cmSchema', t.data.schema
-		Session.set 'cmOperation', t.data.operation
-		Session.set 'cmFields', t.data.fields
-		Session.set 'cmOmitFields', t.data.omitFields
-		Session.set 'cmButtonHtml', html
-		Session.set 'cmTitle', t.data.title or html
-		Session.set 'cmTemplate', t.data.template
-		Session.set 'cmLabelClass', t.data.labelClass
-		Session.set 'cmInputColClass', t.data.inputColClass
-		Session.set 'cmPlaceholder', if t.data.placeholder is true then 'schemaLabel' else ''
-		Session.set 'cmMeteorMethod', t.data.meteorMethod
+		cmFormId.set formId
+		cmCollection.set t.data.collection
+		cmSchema.set t.data.schema
+		cmOperation.set t.data.operation
+		cmFields.set t.data.fields
+		cmOmitFields.set t.data.omitFields
+		cmButtonHtml.set html
+		cmTitle.set t.data.title or html
+		cmTemplate.set t.data.template
+		cmLabelClass.set t.data.labelClass
+		cmInputColClass.set t.data.inputColClass
+		cmPlaceholder.set if t.data.placeholder is true then 'schemaLabel' else ''
+		cmMeteorMethod.set t.data.meteorMethod
 
 		if not _.contains registeredAutoFormHooks, formId
 			AutoForm.addHooks formId,
@@ -118,70 +139,50 @@ Template.afModal.events
 			registeredAutoFormHooks.push formId
 
 		if t.data.doc and typeof t.data.doc == 'string'
-			Session.set 'cmDoc', collectionObj(t.data.collection).findOne _id: t.data.doc
+			cmDoc.set collectionObj(t.data.collection).findOne _id: t.data.doc
 
 		if t.data.buttonContent
-			Session.set 'cmButtonContent', t.data.buttonContent
+			cmButtonContent.set t.data.buttonContent
 		else if t.data.operation == 'insert'
-			Session.set 'cmButtonContent', 'Create'
+			cmButtonContent.set 'Create'
 		else if t.data.operation == 'update' or t.data.operation is 'method-update'
-			Session.set 'cmButtonContent', 'Update'
+			cmButtonContent.set 'Update'
 		else if t.data.operation == 'remove'
-			Session.set 'cmButtonContent', 'Delete'
+			cmButtonContent.set 'Delete'
 
 		if t.data.buttonCancelContent
-			Session.set 'cmButtonCancelContent', t.data.buttonCancelContent
+			cmButtonCancelContent.set t.data.buttonCancelContent
 		else
-			Session.set 'cmButtonCancelContent', 'Cancel'
+			cmButtonCancelContent.set 'Cancel'
 
 		defaultButtonClasses = 'waves-effect btn-flat modal-action'
 		if t.data.buttonClasses
-			Session.set 'cmButtonClasses', t.data.buttonClasses
-			Session.set 'cmButtonCancelClasses', t.data.buttonClasses
-			Session.set 'cmButtonSubmitClasses', t.data.buttonClasses
+			cmButtonClasses.set t.data.buttonClasses
+			cmButtonCancelClasses.set t.data.buttonClasses
+			cmButtonSubmitClasses.set t.data.buttonClasses
 		else
-			Session.set 'cmButtonClasses', defaultButtonClasses
-			Session.set 'cmButtonCancelClasses', defaultButtonClasses
-			Session.set 'cmButtonSubmitClasses', defaultButtonClasses
+			cmButtonClasses.set defaultButtonClasses
+			cmButtonCancelClasses.set defaultButtonClasses
+			cmButtonSubmitClasses.set defaultButtonClasses
 
 		if t.data.buttonSubmitClasses
-			Session.set 'cmButtonSubmitClasses', t.data.buttonSubmitClasses
+			cmButtonSubmitClasses.set t.data.buttonSubmitClasses
 		else
-			Session.set 'cmButtonSubmitClasses', defaultButtonClasses
+			cmButtonSubmitClasses.set defaultButtonClasses
 
 		if t.data.buttonCancelClasses
-			Session.set 'cmButtonCancelClasses', t.data.buttonCancelClasses
+			cmButtonCancelClasses.set t.data.buttonCancelClasses
 		else
-			Session.set 'cmButtonCancelClasses', defaultButtonClasses
+			cmButtonCancelClasses.set defaultButtonClasses
 
 		if t.data.prompt
-			Session.set 'cmPrompt', t.data.prompt
+			cmPrompt.set t.data.prompt
 		else if t.data.operation == 'remove'
-			Session.set 'cmPrompt', 'Are you sure?'
+			cmPrompt.set 'Are you sure?'
 		else
-			Session.set 'cmPrompt', ''
+			cmPrompt.set ''
 
 		$('#afModal').openModal
-			complete: ->
-				sessionKeys = [
-					'cmCollection',
-					'cmSchema',
-					'cmOperation',
-					'cmDoc',
-					'cmButtonHtml',
-					'cmFields',
-					'cmOmitFields',
-					'cmButtonContent',
-					'cmTitle',
-					'cmButtonClasses',
-					'cmPrompt',
-					'cmTemplate',
-					'cmLabelClass',
-					'cmInputColClass',
-					'cmPlaceholder',
-					'cmMeteorMethod'
-				]
-				delete Session.keys[key] for key in sessionKeys
-				return
+			complete: -> return
 
 		return

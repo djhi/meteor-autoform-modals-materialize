@@ -12,7 +12,7 @@ Package.on_use(function(api) {
         'jquery',
         'templating',
         'less',
-        'session',
+        'reactive-var',
         'coffeescript',
         'ui',
         'aldeed:autoform@5.3.0',
